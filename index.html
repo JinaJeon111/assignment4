@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Bar & Drag Interaction</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            overflow: hidden;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            background: hsl(0, 0%, 0%);
+            font-family: 'Pretendard-Regular';
+            font-weight: 600;
+        }
+
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .grill {
+            position: relative;
+            padding-top: 50px; 
+            padding-bottom: 20px; /* 위쪽 여백 */
+            z-index: 1; /* grill의 z-index */
+        }
+
+
+        #raw{
+            position: absolute; /* 절대 위치로 설정 */
+            top: 35%; /* grill의 상단에 위치 */
+            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            transform: translateX(-50%) rotate(15deg); /* 중앙 정렬 */
+            width: 450px;
+            height: 250px;
+            object-fit: fill;
+            z-index: 2;
+        }
+
+        #grilled{
+            position: absolute;
+            width: 450px;
+            height: 400px;
+            object-fit: fill;
+            top: 20%; /* grill의 상단에 위치 */
+            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            transform: translateX(-50%) rotate(15deg);
+            z-index: 3;
+        }
+
+        #burnt{
+            position: absolute;
+            width: 450px;
+            height: 400px;
+            object-fit: fill;
+            top: 20%; /* grill의 상단에 위치 */
+            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            transform: translateX(-50%) rotate(15deg);
+            z-index: 3;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            margin-bottom: 20px;
+            object-position: center;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            width: 400px;
+            height: 30px;
+            border: 2px solid #FFFFFF;
+            border-radius: 5px;
+            background-color: #19181d;
+            overflow: hidden;
+            margin-top: 5px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            background-color: #9F0A28;
+            transition: width 0.5s ease;
+            position: absolute;
+            z-index: 2
+        }
+
+        .goal {
+            position: absolute;
+            left: 69%;
+            width: 6%;
+            height: 100%;
+            background-color: #FFFFFF;
+            z-index: 1
+        }
+
+        #even {
+            position: relative;
+            left: 72.5%; 
+            transform: translateX(-50%);
+            font-size: 25px;
+            color: #FFFFFF;
+        }
+
+        #success {
+            font-size: 50px;
+            color: #FFFFFF;
+        }
+
+
+        .button{
+            width: 200px; 
+            height: 60px; 
+            font-size: 22px; 
+            border-radius: 100%;
+            background-color: #FFFFFF;
+        }
+
+        .containerCat img {
+            max-width: 300px; /* 최대 너비 설정 */
+            max-height: 300px; /* 최대 높이 설정 */
+            width: 100%; /* 너비를 100%로 설정하여 비율 유지 */
+            height: auto; /* 자동으로 높이를 조정 */
+            object-fit: cover; /* 이미지 비율을 유지하면서 잘림 */
+            object-position: center; 
+            z-index: 1;
+        }
+
+        .plate{
+            position: relative;
+            padding-bottom: 50px; 
+            z-index: 1; /* grill의 z-index */
+            width: 500px;
+            height: 400px;
+            object-fit: fill;
+            top: 15%; /* grill의 상단에 위치 */
+            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            transform: translateX(-50%) translateY(-25px);
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(-100px); opacity: 0; }
+            50% { transform: translateY(10px); opacity: 1; }
+            100% { transform: translateY(0); }
+        }
+
+        .bounce {
+            animation: bounce 1s;
+        }
+
+        /* 좌우 및 위아래로 움직이는 리듬 타는 애니메이션 */
+        @keyframes danceMove {
+            0% {
+                transform: translate(0, 0) rotate(0deg); /* 기본 위치 */
+            }
+            10% {
+                transform: translate(-5px, -5px) rotate(-2deg); /* 좌측 위로 이동 */
+            }
+            20% {
+                transform: translate(-5px, -5px) rotate(2deg); /* 우측 아래로 이동 */
+            }
+            30% {
+                transform: translate(-10px, 0) rotate(-3deg); /* 좌측으로 이동 */
+            }
+            40% {
+                transform: translate(-10px, -5px) rotate(3deg); /* 우측 위로 이동 */
+            }
+            50% {
+                transform: translate(0, 0px) rotate(0deg); /* 아래로 이동 */
+            }
+            60% {
+                transform: translate(5px, 10px) rotate(5deg); /* 위로 이동 */
+            }
+            70% {
+                transform: translate(10px, 5px) rotate(-2deg); /* 우측 아래로 이동 */
+            }
+            80% {
+                transform: translate(10px, 0) rotate(2deg); /* 좌측으로 이동 */
+            }
+            90% {
+                transform: translate(5px, 5px) rotate(0deg); /* 우측 위로 이동 */
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg); /* 기본 위치 */
+            }
+        }
+
+        /* 리듬 타는 애니메이션 적용 */
+        .dance {
+            animation: danceMove 1s ease-in-out infinite; /* 1초 간격으로 무한 반복 */
+            transform-origin: center; /* 중심축을 기준으로 애니메이션 */
+        }
+
+        
+
+
+       
+
+
+
+    </style>
+</head>
+
+<body>
+
+    <img id="thumbsUp" src="thumbsUp.png" style="display: none;">
+    <img id="sad" src="sad.png" style="display: none;">
+
+    <div class="containerCat">
+        <img id="basic" src="default.jpg" >
+
+        <img id="failed1" src="failed1.gif" style="display: none;">
+        <img id="failed2" src="failed2.jpg" style="display: none;">
+        <img id="failed3" src="failed3.gif" style="display: none;">
+        <img id="failed4" src="failed4.gif" style="display: none;">
+
+        <img id="success1" src="success.jpg" style="display: none;">
+        <img id="success2" src="success2.gif" style="display: none;">
+        <img id="success3" src="success3.png" style="display: none;">
+
+    </div>
+    
+    <div class="container">
+        <img id="grill" src="grill.png" class="grill" >
+        <img id="plate" src="plate.png" class="plate" style="display: none;">
+        <img id="raw" src="raw.png" >
+        <img id="grilled" src="grilled.png" style="display: none;" >
+        <img id="burnt" src="burnt.png" style="display: none;">
+
+    </div>
+
+    <div class="container">
+
+
+        <div id="even">even</div>
+        <div id="progress-bar" class="progress-bar">
+            <div id="goal" class="goal"></div>
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+
+        <button id="grill-btn" class="button" >구워보자</button>
+        <button id="stop-btn" class="button" style="display: none;">지금이야!</button>
+        <button id="retry-btn" class="button" style="display: none;">다시 해보자..</button>
+
+    </div>
+
+    <audio id="grilling" src="grilling.mp3"></audio>
+    <audio id="aww" src="aww.mp3"></audio>
+    <audio id="dance" src="dance.mp3"></audio>
+
+    <audio id="even1" src="even1.mp3"></audio>
+    <audio id="even2" src="even2.mp3"></audio>
+    <audio id="even3" src="even3.mp3"></audio>
+    <audio id="out" src="탈락2.mp3"></audio>
+
+    <audio id="survive" src="생존1.mp3"></audio>
+    <audio id="doneness1" src="익힘1.mp3"></audio>
+    <audio id="doneness2" src="익힘2.mp3"></audio>
+    <audio id="doneness3" src="익힘3.mp3"></audio>
+    <audio id="congratu" src="축하.mp3"></audio>
+    <audio id="hh" src="흐헿헿.mp3"></audio>
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressBar = document.getElementById('progress-fill');
+            const grillBtn = document.getElementById('grill-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const retryBtn = document.getElementById('retry-btn');
+
+            const basic = document.getElementById('basic');
+            const success = document.getElementById('success');
+            const failedCats = ['failed1','failed2', 'failed3', 'failed4'];
+            const successedCats = ['success1','success2', 'success3'];
+
+            let interval;           // 애니메이션 타이머
+            let isAnimating = false; // 애니메이션 상태 플래그
+            let isStopped = false; // 게이지가 클릭되었는지 확인하는 플래그
+            let initialFill;
+            let fillEnd;
+
+
+            // Start button for the progress bar
+            grillBtn.addEventListener('click', () => {
+                startAnimation();
+                resetImages();
+            });
+            retryBtn.addEventListener('click', () => {
+                isStopped = false;
+                startAnimation();
+                resetImages();
+            });
+
+            // Stop the animation if clicked
+            stopBtn.addEventListener('click', stopAnimation);
+
+            // Function to start the animation for the progress bar
+            function startAnimation() {
+                // 기존 애니메이션 타이머 모두 정리
+                if (initialFill) clearInterval(initialFill);
+                if (interval) clearInterval(interval);
+                if (fillEnd) clearInterval(fillEnd);
+
+                if (isAnimating) return;
+                isAnimating = true;
+                isStopped = false;
+
+                grill.style.display = 'inline-block';
+                playGrill();
+                grilling.play();
+                dance.pause();
+
+                even.innerText = 'even';
+
+                progressBar.style.width = '0%';
+                progress = 0;
+
+                document.documentElement.style.backgroundColor = 'hsl(0, 0%, 0%)';
+                document.body.style.backgroundColor = 'hsl(0, 0%, 0%)';
+
+                raw.style.display = 'inline-block';
+                grilled.style.display = 'none';
+                burnt.style.display = 'none';
+                plate.style.display = 'none';
+
+                even.style.color = '#ffffff';
+
+                grillBtn.style.display = 'none'; // 기존 버튼 숨김
+                retryBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block'; // 새로운 버튼 표시
+                retryBtn.innerText = '다시 해보자..';
+
+                // Initial fill to 50%
+                initialFill = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = progress + '%';
+                    updateProgressBarColor(progress);
+                    updateSalmon(progress);
+
+                    if (progress >= 50) {
+                        clearInterval(initialFill);
+                        randomAnimation();
+                    }
+                }, 50);
+
+                // Random movement between 50% to 70%
+                function randomAnimation() {
+                    let startTime = Date.now();  // 타이머 시작 시간 기록
+                    interval = setInterval(() => {
+                        // 현재 시간과 시작 시간의 차이를 계산하여 7초 동안 실행되도록 제어
+                        const elapsedTime = Date.now() - startTime;
+
+                        // 7초가 지나면 interval을 종료
+                        if (elapsedTime >= 7000) {
+                            clearInterval(interval);
+                            if (!isStopped) {
+                                fillToEnd();  // 7초 후에 fillToEnd 실행
+                            }
+                        } else {
+                            // 7초 동안 50%에서 80% 사이의 랜덤 값으로 게이지 업데이트
+                            progress = Math.floor(Math.random() * 31) + 50;
+                            progressBar.style.width = progress + '%';
+                            updateProgressBarColor(progress);
+                            updateSalmon(progress);
+                        }
+                    }, 300)};  
+
+                // Fill to 100% if not stopped
+                function fillToEnd() {
+                    fillEnd = setInterval(() => {
+                        if (isStopped) {
+                            clearInterval(fillEnd);
+                            return; // stop the fill to 100% if isStopped is true
+                        }
+                        progress = Math.min(progress + 3, 100); // Ensure progress doesn't exceed 100
+                        progressBar.style.width = progress + '%';
+                        updateProgressBarColor(progress);
+
+                        if (progress >= 100) {
+                            clearInterval(fillEnd);
+                            isAnimating = false;
+                            isStopped = true;
+                            stopGrill();
+                            stopBtn.style.display = 'none'; // 기존 버튼 숨김
+                            retryBtn.style.display = 'inline-block'; // 새로운 버튼 표시
+                            burnt.style.display = 'inline-block';
+                            failed();
+                            document.getElementById("grill").src = "grillOut.gif";
+                        }
+                    }, 50);
+                }
+
+                 function updateSalmon(progress) {
+                    grilled.style.display = 'inline-block';
+                    grilled.style.opacity = Math.min(1, progress / 100); // raw의 투명도 (0에서 1 사이)
+                    raw.style.opacity = Math.max(0, 1 - (progress / 100)); // grilled의 투명도 (1에서 0 사이)
+                }
+                
+            }
+
+            // GIF를 재생시키는 함수
+            function playGrill() {
+                document.getElementById("grill").src = "grill.gif";
+                isPlaying = true;
+            }
+
+            // GIF를 정지시키는 함수 (정지된 이미지로 교체)
+            function stopGrill() {
+                document.getElementById("grill").src = "grill.png";
+                isPlaying = false;
+            }
+
+            
+            function stopAnimation() {
+                
+
+                stopGrill();
+                grilling.pause();
+                isAnimating = false;
+                isStopped = true;
+                plate.style.display = 'none';
+
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                } // 현재 애니메이션 타이머 중지
+
+                if (initialFill) {
+                    clearInterval(initialFill);
+                    initialFill = null;
+                }
+
+                if (fillEnd) {
+                    clearInterval(fillEnd);
+                    fillEnd = null;
+                }
+
+                // 현재 진행 바의 너비를 가져옴
+                const currentWidth = parseFloat(progressBar.style.width); // % 값을 숫자로 변환
+
+                stopBtn.style.display = 'none'; // 기존 버튼 숨김
+                retryBtn.style.display = 'inline-block'; // 새로운 버튼 표시
+
+                // 목표 위치 계산
+                const goalStart = 70; // 목표 시작 위치 (%)
+                const goalEnd = 75;   // 목표 종료 위치 (%)
+
+                // 성공 조건 확인
+                if (currentWidth >= goalStart && currentWidth <= goalEnd) {
+
+
+
+                    grill.style.display = 'none';
+                    plate.style.display = 'inline-block';
+                    progressBar.style.backgroundColor = '#ffff00';
+                    even.style.color = '#ffff00';
+
+                    raw.style.display = 'none'; 
+                    burnt.style.display = 'none';
+                    grilled.style.display = 'none';
+                    retryBtn.innerText = '다시 해볼래';
+
+                    basic.style.display = 'none';
+                    const successedCats = ['success1','success2', 'success3'];
+                    const randomIndex = Math.floor(Math.random() * successedCats.length);
+                    const selectedSuccessedCat = document.getElementById(successedCats[randomIndex]);
+                    if (selectedSuccessedCat) {
+                        selectedSuccessedCat.style.display = 'inline-block'; // 선택된 고양이를 표시
+
+                    }
+
+                    const successSounds = ['survive','doneness1', 'doneness2', 'doneness3','congratu','hh'];
+                    const randomSound = Math.floor(Math.random() * successSounds.length);
+                    const selectedSuccessSound = document.getElementById(successSounds[randomSound]);
+                    selectedSuccessSound.play();
+
+                    selectedSuccessSound.addEventListener('ended', function() {
+                        dance.play(); // 두 번째 음악 재생
+                        selectedSuccessedCat.classList.add('dance');
+                    });
+
+                    const randomColor = Math.floor(Math.random() * 360); // HSL에서 Hue 값은 0에서 360 사이
+                    document.documentElement.style.backgroundColor = `hsl(${randomColor}, 100%, 15%)`;
+                    document.body.style.backgroundColor = `hsl(${randomColor}, 100%, 15%)`;
+
+                    explodeThumbsUp();
+                }
+
+                else {
+                    failed();
+                }
+
+                
+            }
+
+            function failed(){
+                grilling.pause();
+                aww.play();
+                const failedSounds = ['even1','even2', 'even3', 'out'];
+                const randomSound = Math.floor(Math.random() * failedSounds.length);
+                const selectedFailedSound = document.getElementById(failedSounds[randomSound]);
+
+                setTimeout(() => {
+                    selectedFailedSound.play(); // selectedFailedSound가 이미 요소이므로 바로 play() 호출
+                }, 800)
+
+                even.innerText ='NOT even!';
+                even.style.color = 'hsl(0, 100%, 50%)';
+        
+
+                basic.style.display = "none";
+                const failedCats = ['failed1','failed2', 'failed3', 'failed4'];
+                const randomIndex = Math.floor(Math.random() * failedCats.length);
+                const selectedFailedCat = document.getElementById(failedCats[randomIndex]);
+                if (selectedFailedCat) {
+                        selectedFailedCat.style.display = 'inline-block'; // 선택된 고양이를 표시
+
+                        selectedFailedCat.classList.add('bounce'); // bounce 효과 클래스 추가
+
+                        // 애니메이션이 끝난 후 클래스 제거
+                        setTimeout(() => {
+                          selectedFailedCat.classList.remove('bounce');
+                        }, 1000); // 애니메이션 지속 시간이 0.5초이므로 500ms 후 제거
+
+                        const sad = document.getElementById('sad');
+                        const numberOfSads = 20; // 흩뿌릴 thumbs up 이미지 수
+
+                        for (let i = 0; i < numberOfSads; i++) {
+                            const newSad = sad.cloneNode(); // 기존 이미지를 복제
+                            document.body.appendChild(newSad); // 복제된 이미지를 body에 추가
+
+                            const randomSize = Math.floor(Math.random() * 150) + 20; // 20 ~ 100px 사이의 크기
+                            newSad.style.width = `${randomSize}px`;
+
+                            newSad.style.position = 'absolute'; // z-index가 작동하도록 position 설정
+                            newSad.style.zIndex = 1; // z-index 설정
+                
+
+                            // 랜덤 위치 설정
+                            newSad.style.left = Math.random() * window.innerWidth + 'px';
+                            newSad.style.top = Math.random() * window.innerHeight + 'px';
+                            newSad.style.display = 'block'; // 이미지 표시
+
+                            // setTimeout을 사용하여 애니메이션 적용에 약간의 지연 추가
+                            setTimeout(() => {
+                                // 애니메이션 스타일 설정
+                                newSad.style.transition = 'transform 4s ease, opacity 2s ease';
+                                newSad.style.transform = `translateY(120px)`;
+                                newSad.style.opacity = 0; // 애니메이션 후 투명하게 설정
+                            }, 200);
+
+                            // 애니메이션 종료 후 이미지 제거
+                            setTimeout(() => {
+                                newSad.remove();
+                            }, 1200);
+                        }
+                }
+            }
+
+            // Reset the images to show the basic image and hide failed images
+            function resetImages() {
+                basic.style.display = 'inline-block'; // 기본 이미지 보이기
+                failedCats.forEach(catId => {
+                    const catImage = document.getElementById(catId);
+                    if (catImage) catImage.style.display = 'none'; // 실패 이미지 숨기기
+                });
+                successedCats.forEach(catId => {
+                    const catImage = document.getElementById(catId);
+                    if (catImage) catImage.style.display = 'none'; // 실패 이미지 숨기기
+                });
+            }
+            
+
+            function updateProgressBarColor(progress) {
+                let red, green, blue;
+
+                if (progress <= 90) {
+                    red = 255; 
+                    green = Math.floor((255 - (progress / 90) * 255)); 
+                    blue = Math.floor((255 - (progress / 90) * 255));
+                } else {
+                    red = Math.floor(255 - ((progress - 90) / 10) * 255); // Adjusted for 10 range
+                    green = 0; 
+                    blue = 0;
+                }
+
+                progressBar.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`; // RGB
+            }
+
+            function explodeThumbsUp() {
+                const thumbsUp = document.getElementById('thumbsUp');
+                const numberOfThumbs = 30; // 흩뿌릴 thumbs up 이미지 수
+
+                for (let i = 0; i < numberOfThumbs; i++) {
+                    const newThumb = thumbsUp.cloneNode(); // 기존 이미지를 복제
+                    document.body.appendChild(newThumb); // 복제된 이미지를 body에 추가
+
+                    const randomSize = Math.floor(Math.random() * 150) + 20; // 20 ~ 100px 사이의 크기
+                    newThumb.style.width = `${randomSize}px`;
+
+                    newThumb.style.position = 'absolute'; // z-index가 작동하도록 position 설정
+                    newThumb.style.zIndex = 1; // z-index 설정
+        
+
+                    // 랜덤 위치 설정
+                    newThumb.style.left = Math.random() * window.innerWidth + 'px';
+                    newThumb.style.top = Math.random() * window.innerHeight + 'px';
+                    newThumb.style.display = 'block'; // 이미지 표시
+
+                    // setTimeout을 사용하여 애니메이션 적용에 약간의 지연 추가
+                    setTimeout(() => {
+                        // 애니메이션 스타일 설정
+                        newThumb.style.transition = 'transform 4s ease, opacity 2s ease';
+                        newThumb.style.transform = `translateY(-120px)`;
+                        newThumb.style.opacity = 0; // 애니메이션 후 투명하게 설정
+                    }, 200);
+
+                    // 애니메이션 종료 후 이미지 제거
+                    setTimeout(() => {
+                        newThumb.remove();
+                    }, 1200);
+                }
+            }
+        });
+
+
+
+
+    </script>
+</body>
+</html>
+
+
+
+
