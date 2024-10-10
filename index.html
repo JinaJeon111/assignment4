@@ -7,7 +7,7 @@
     <style>
         body, html {
             height: 100%;
-            margin: 20px;
+            margin: 0;
             padding: 0;
             display: flex;
             overflow: hidden;
@@ -28,62 +28,69 @@
 
         .grill {
             position: relative;
-            padding-top: 50px; 
-            padding-bottom: 20px; /* 위쪽 여백 */
-            z-index: 1; /* grill의 z-index */
+            margin-top: 3vh;
+            margin-bottom: 1.5vh;
+            width: 30vw;
+            z-index: 1;
         }
 
-
-        #raw{
-            position: absolute; /* 절대 위치로 설정 */
-            top: 35%; /* grill의 상단에 위치 */
-            left: 50%; /* 중앙 정렬을 위한 기본값 */
-            transform: translateX(-50%) rotate(15deg); /* 중앙 정렬 */
-            width: 450px;
-            height: 250px;
+        #raw {
+            position: absolute;
+            top: 40%; /* 그대로 유지 */
+            left: 50%; /* 그대로 유지 */
+            transform: translateX(-50%) rotate(35deg);
+            width: 15vw; /* 원래 450px -> 30vw */
+             /* 원래 250px -> 15vh */
             object-fit: fill;
             z-index: 2;
         }
 
-        #grilled{
+        #grilled {
             position: absolute;
-            width: 450px;
-            height: 400px;
+            width: 17vw; /* 원래 450px -> 30vw */
             object-fit: fill;
-            top: 20%; /* grill의 상단에 위치 */
-            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            top: 35%; /* 그대로 유지 */
+            left: 50%; /* 그대로 유지 */
             transform: translateX(-50%) rotate(15deg);
             z-index: 3;
         }
 
-        #burnt{
+        #burnt {
             position: absolute;
-            width: 450px;
-            height: 400px;
+            width: 17vw; /* 원래 450px -> 30vw */
             object-fit: fill;
-            top: 20%; /* grill의 상단에 위치 */
-            left: 50%; /* 중앙 정렬을 위한 기본값 */
+            top: 35%; /* 그대로 유지 */
+            left: 50%; /* 그대로 유지 */
             transform: translateX(-50%) rotate(15deg);
             z-index: 3;
+        }
+
+        .plate {
+            position: relative;
+            padding-bottom: 5vh; /* 원래 50px -> 5vh */
+            z-index: 1;
+            width: 17vw; /* 원래 500px -> 33vw */
+            object-fit: fill;
+            top: 15%; /* 그대로 유지 */
+            left: 50%; /* 그대로 유지 */
+            transform: translateX(-50%) translateY(-2vh); /* 원래 -25px -> -2vh */
         }
 
         .container {
             text-align: center;
             position: relative;
-            margin-bottom: 20px;
             object-position: center;
             z-index: 1;
         }
 
         .progress-bar {
-            width: 400px;
-            height: 30px;
-            border: 2px solid #FFFFFF;
-            border-radius: 5px;
+            width: 26vw; /* 원래 400px -> 26vw */
+            height: 3vh; /* 원래 30px -> 3vh */
+            border: 0.13vw solid #FFFFFF; /* 원래 2px -> 0.13vw */
+            border-radius: 0.33vw; /* 원래 5px -> 0.33vw */
             background-color: #19181d;
             overflow: hidden;
-            margin-top: 5px;
-            margin-bottom: 25px;
+            margin-bottom: 1vh; /* 원래 25px -> 2vh */
             position: relative;
             z-index: 1;
         }
@@ -94,60 +101,43 @@
             background-color: #9F0A28;
             transition: width 0.5s ease;
             position: absolute;
-            z-index: 2
+            z-index: 2;
         }
 
         .goal {
             position: absolute;
-            left: 69%;
-            width: 6%;
+            left: 69%; /* 그대로 유지 */
+            width: 1.5vw; /* 원래 6% -> 1.5vw */
             height: 100%;
             background-color: #FFFFFF;
-            z-index: 1
+            z-index: 1;
         }
 
         #even {
             position: relative;
-            left: 72.5%; 
+            left: 72.5%; /* 그대로 유지 */
             transform: translateX(-50%);
-            font-size: 25px;
-            color: #FFFFFF;
-        }
-
-        #success {
-            font-size: 50px;
+            font-size: 1.5vw; 
             color: #FFFFFF;
         }
 
 
-        .button{
-            width: 200px; 
-            height: 60px; 
-            font-size: 22px; 
-            border-radius: 100%;
+        .button {
+            width: 13vw; /* 원래 200px -> 13vw */
+            height: 8vh; /* 원래 60px -> 8vh */
+            font-size: 1.3vw; /* 원래 22px -> 1.5vw */
+            border-radius: 50%; /* 완전한 원형 유지 */
             background-color: #FFFFFF;
         }
 
         .containerCat img {
-            max-width: 300px; /* 최대 너비 설정 */
-            max-height: 300px; /* 최대 높이 설정 */
-            width: 100%; /* 너비를 100%로 설정하여 비율 유지 */
-            height: auto; /* 자동으로 높이를 조정 */
-            object-fit: cover; /* 이미지 비율을 유지하면서 잘림 */
-            object-position: center; 
+            max-width: 20vw; /* 원래 300px -> 20vw */
+            max-height: 20vh; /* 원래 300px -> 20vh */
+            width: 100%; /* 그대로 유지 */
+            height: auto; /* 그대로 유지 */
+            object-fit: cover;
+            object-position: center;
             z-index: 1;
-        }
-
-        .plate{
-            position: relative;
-            padding-bottom: 50px; 
-            z-index: 1; /* grill의 z-index */
-            width: 500px;
-            height: 400px;
-            object-fit: fill;
-            top: 15%; /* grill의 상단에 위치 */
-            left: 50%; /* 중앙 정렬을 위한 기본값 */
-            transform: translateX(-50%) translateY(-25px);
         }
 
         @keyframes bounce {
@@ -203,19 +193,12 @@
             transform-origin: center; /* 중심축을 기준으로 애니메이션 */
         }
 
-        
-
-
-       
-
-
-
     </style>
 </head>
 
 <body>
 
-    <img id="thumbsUp" src="thumbsUp.png" style="display: none;">
+    <img id="thumbsUp" src="thumbsup.png" style="display: none;">
     <img id="sad" src="sad.png" style="display: none;">
 
     <div class="containerCat">
@@ -259,6 +242,7 @@
     <audio id="grilling" src="grilling.mp3"></audio>
     <audio id="aww" src="aww.mp3"></audio>
     <audio id="dance" src="dance.mp3"></audio>
+    <audio id="clapping" src="clapping.mp3"></audio>
 
     <audio id="even1" src="even1.mp3"></audio>
     <audio id="even2" src="even2.mp3"></audio>
@@ -271,6 +255,7 @@
     <audio id="doneness3" src="익힘3.mp3"></audio>
     <audio id="congratu" src="축하.mp3"></audio>
     <audio id="hh" src="흐헿헿.mp3"></audio>
+
 
     
 
@@ -322,6 +307,7 @@
                 playGrill();
                 grilling.play();
                 dance.pause();
+                clapping.pause();
 
                 even.innerText = 'even';
 
@@ -364,7 +350,7 @@
                         const elapsedTime = Date.now() - startTime;
 
                         // 7초가 지나면 interval을 종료
-                        if (elapsedTime >= 7000) {
+                        if (elapsedTime >= 5000) {
                             clearInterval(interval);
                             if (!isStopped) {
                                 fillToEnd();  // 7초 후에 fillToEnd 실행
@@ -488,9 +474,16 @@
                     selectedSuccessSound.play();
 
                     selectedSuccessSound.addEventListener('ended', function() {
+                        clapping.play();
                         dance.play(); // 두 번째 음악 재생
                         selectedSuccessedCat.classList.add('dance');
                     });
+
+                    setTimeout(() => {
+                        clapping.pause();
+                        dance.pause();
+                        selectedSuccessedCat.classList.remove('dance');
+                        }, 15000); // 애니메이션 지속 시간이 0.5초이므로 500ms 후 제거
 
                     const randomColor = Math.floor(Math.random() * 360); // HSL에서 Hue 값은 0에서 360 사이
                     document.documentElement.style.backgroundColor = `hsl(${randomColor}, 100%, 15%)`;
@@ -542,8 +535,8 @@
                             const newSad = sad.cloneNode(); // 기존 이미지를 복제
                             document.body.appendChild(newSad); // 복제된 이미지를 body에 추가
 
-                            const randomSize = Math.floor(Math.random() * 150) + 20; // 20 ~ 100px 사이의 크기
-                            newSad.style.width = `${randomSize}px`;
+                            const randomSize = Math.floor(Math.random() * 9) +1; // 20 ~ 100px 사이의 크기
+                            newSad.style.width = `${randomSize}vw`;
 
                             newSad.style.position = 'absolute'; // z-index가 작동하도록 position 설정
                             newSad.style.zIndex = 1; // z-index 설정
@@ -565,7 +558,6 @@
                             // 애니메이션 종료 후 이미지 제거
                             setTimeout(() => {
                                 newSad.remove();
-                                
                             }, 1200);
                         }
                 }
@@ -609,8 +601,8 @@
                     const newThumb = thumbsUp.cloneNode(); // 기존 이미지를 복제
                     document.body.appendChild(newThumb); // 복제된 이미지를 body에 추가
 
-                    const randomSize = Math.floor(Math.random() * 150) + 20; // 20 ~ 100px 사이의 크기
-                    newThumb.style.width = `${randomSize}px`;
+                    const randomSize = Math.floor(Math.random() *9) + 1; // 20 ~ 100px 사이의 크기
+                    newThumb.style.width = `${randomSize}vw`;
 
                     newThumb.style.position = 'absolute'; // z-index가 작동하도록 position 설정
                     newThumb.style.zIndex = 1; // z-index 설정
